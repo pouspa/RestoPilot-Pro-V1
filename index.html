@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123c32">
+  <meta name="description" content="Gestion de restaurant et service traiteur hors connexion">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>RestoPilot Pro</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">RP</div>
+    <div class="brand"><strong id="businessName">RestoPilot Pro</strong><span>Gestion restaurant & traiteur</span></div>
+    <span id="connectionStatus" class="status">Mode local</span>
+  </header>
+  <div class="app-shell">
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="nav-btn active" data-view="dashboard">Vue générale</button>
+      <button class="nav-btn" data-view="sales">Ventes</button>
+      <button class="nav-btn" data-view="recipes">Plats & recettes</button>
+      <button class="nav-btn" data-view="expenses">Dépenses</button>
+      <button class="nav-btn" data-view="reports">Rapports</button>
+      <button class="nav-btn" data-view="settings">Paramètres & sauvegarde</button>
+    </nav>
+    <main id="main" tabindex="-1">
+      <section class="view active" id="view-dashboard">
+        <div class="page-heading"><div><p class="eyebrow">PILOTAGE</p><h1>Vue générale</h1><p class="muted">Les chiffres se mettent à jour à partir des ventes, recettes et dépenses enregistrées.</p></div><button class="primary" data-go="sales">＋ Nouvelle vente</button></div>
+        <div class="cards four">
+          <article class="metric"><span>Chiffre d’affaires</span><strong id="kpiRevenue">0 F</strong><small id="kpiSalesCount">0 vente</small></article>
+          <article class="metric"><span>Coût estimé des plats vendus</span><strong id="kpiCost">0 F</strong><small>Selon le coût enregistré des recettes</small></article>
+          <article class="metric"><span>Dépenses enregistrées</span><strong id="kpiExpenses">0 F</strong><small>Charges saisies dans l’application</small></article>
+          <article class="metric highlight"><span>Résultat estimé</span><strong id="kpiProfit">0 F</strong><small>Ventes − coût des plats − dépenses</small></article>
+        </div>
+        <div class="two-col">
+          <section class="panel"><div class="panel-head"><h2>Dernières ventes</h2><button class="text-btn" data-go="sales">Voir les ventes</button></div><div id="recentSales" class="table-wrap"></div></section>
+          <section class="panel"><div class="panel-head"><h2>Résumé rapide</h2></div><div id="quickSummary" class="summary-list"></div><div class="notice">Le résultat est une estimation simple : il dépend des coûts de recettes et des dépenses que tu saisis. Il ne remplace pas une comptabilité officielle.</div></section>
+        </div>
+      </section>
+
+      <section class="view" id="view-sales">
+        <div class="page-heading"><div><p class="eyebrow">ENCAISSEMENTS</p><h1>Enregistrer une vente</h1><p class="muted">Chaque vente conserve le prix et le coût estimé du plat au moment de la vente.</p></div></div>
+        <section class="panel"><form id="saleForm" class="form-grid"><label>Date de vente<input id="saleDate" type="date" required></label><label>Plat<select id="saleProduct" required></select></label><label>Quantité<input id="saleQty" type="number" min="1" step="1" value="1" required></label><label>Prix unitaire (FCFA)<input id="salePrice" type="number" min="0" step="1" required></label><div class="preview-box"><span>Coût estimé / portion</span><strong id="saleUnitCost">0 F</strong></div><label class="wide">Note (facultatif)<input id="saleNote" maxlength="180" placeholder="Ex. commande à emporter"></label><div class="form-actions wide"><button class="primary" type="submit">Enregistrer la vente</button><span id="salePreview" class="muted"></span></div></form></section>
+        <section class="panel"><div class="panel-head"><h2>Ventes par journée</h2><span class="muted">Choisis une date pour isoler les ventes du jour.</span></div><div class="form-grid sales-filter"><label>Afficher la journée du<input id="salesFilterDate" type="date"></label><div class="form-actions"><button class="secondary" id="showTodaySales" type="button">Aujourd’hui</button><button class="secondary" id="showAllSales" type="button">Toutes les dates</button></div></div><div class="cards four day-cards"><article class="metric"><span>Ventes validées</span><strong id="dayRevenue">0 F</strong></article><article class="metric"><span>Coût estimé</span><strong id="dayCost">0 F</strong></article><article class="metric"><span>Dépenses du jour</span><strong id="dayExpenses">0 F</strong></article><article class="metric highlight"><span>Résultat estimé</span><strong id="dayProfit">0 F</strong></article></div><div id="salesDayLabel" class="muted"></div></section><section class="panel"><div class="panel-head"><h2>Historique des ventes</h2><span class="muted">Les annulations restent traçables.</span></div><div id="salesTable" class="table-wrap"></div></section>
+      </section>
+
+      <section class="view" id="view-recipes">
+        <div class="page-heading"><div><p class="eyebrow">MENU & COÛTS</p><h1>Plats et recettes</h1><p class="muted">Modifie les plats, prix de vente, ingrédients, coûts et portions sans toucher au code.</p></div><button class="primary" id="newProductBtn">＋ Ajouter un plat</button></div>
+        <div class="notice info">Pour démarrer simplement, saisis le coût total estimé des ingrédients pour un lot, puis le nombre de portions vendables. Tu pourras détailler les ingrédients par la suite.</div>
+        <section class="panel"><div id="productsTable" class="table-wrap"></div></section>
+        <section class="panel" id="productEditor" hidden><div class="panel-head"><h2 id="productEditorTitle">Ajouter un plat</h2><button class="icon-btn" id="closeProductEditor" aria-label="Fermer">✕</button></div><form id="productForm" class="form-grid"><input type="hidden" id="productId"><label>Nom du plat<input id="productName" required maxlength="90" placeholder="Ex. Riz gras"></label><label>Catégorie<input id="productCategory" maxlength="60" placeholder="Ex. Plats principaux"></label><label>Prix de vente par portion (FCFA)<input id="productPrice" type="number" min="0" step="1" required></label><label>Coût total des ingrédients du lot (FCFA)<input id="productBatchCost" type="number" min="0" step="1" required></label><label>Portions vendables par lot<input id="productYield" type="number" min="1" step="1" value="1" required></label><label>Seuil de marge brute (%)<input id="productMarginTarget" type="number" min="0" max="100" step="1" value="30"></label><label class="wide">Ingrédients / notes de recette<textarea id="productIngredients" rows="3" placeholder="Ex. riz 2 kg, viande 1 kg, huile 250 ml…"></textarea></label><div class="recipe-calculation wide" id="recipeCalculation"></div><div class="form-actions wide"><button class="primary" type="submit">Enregistrer le plat</button><button class="secondary" type="button" id="cancelProductEdit">Annuler</button></div></form></section>
+      </section>
+
+      <section class="view" id="view-expenses">
+        <div class="page-heading"><div><p class="eyebrow">CHARGES</p><h1>Dépenses</h1><p class="muted">Enregistre les charges du restaurant pour calculer le résultat estimé.</p></div></div>
+        <section class="panel"><form id="expenseForm" class="form-grid"><label>Date<input id="expenseDate" type="date" required></label><label>Catégorie<select id="expenseCategory"><option>Achats alimentaires hors stock initial</option><option>Gaz / charbon</option><option>Eau / électricité</option><option>Loyer</option><option>Transport</option><option>Salaires</option><option>Emballages</option><option>Entretien</option><option>Autre</option></select></label><label>Montant (FCFA)<input id="expenseAmount" type="number" min="1" step="1" required></label><label>Description<input id="expenseDescription" required maxlength="160" placeholder="Ex. recharge de gaz"></label><div class="form-actions wide"><button class="primary" type="submit">＋ Enregistrer la dépense</button></div></form></section>
+        <section class="panel"><div class="panel-head"><h2>Historique des dépenses</h2><span id="expenseTotal" class="pill">0 F</span></div><div id="expensesTable" class="table-wrap"></div></section>
+      </section>
+
+      <section class="view" id="view-reports">
+        <div class="page-heading"><div><p class="eyebrow">ANALYSE</p><h1>Rapports</h1><p class="muted">Filtre les chiffres par période et exporte un rapport pour consultation ou archivage.</p></div><button class="primary" id="printReport">Exporter / Imprimer le rapport</button></div>
+        <section class="panel"><div class="form-grid"><label>Date de début<input id="reportStart" type="date"></label><label>Date de fin<input id="reportEnd" type="date"></label><div class="form-actions"><button class="secondary" id="applyReport" type="button">Actualiser</button></div></div></section>
+        <div class="cards four report-cards"><article class="metric"><span>Ventes nettes</span><strong id="reportRevenue">0 F</strong></article><article class="metric"><span>Coût des plats vendus</span><strong id="reportCost">0 F</strong></article><article class="metric"><span>Dépenses</span><strong id="reportExpenses">0 F</strong></article><article class="metric highlight"><span>Résultat estimé</span><strong id="reportProfit">0 F</strong></article></div>
+        <section class="panel"><div class="panel-head"><h2>Détail de la période</h2></div><div id="reportDetails" class="table-wrap"></div></section><section class="panel"><div class="panel-head"><h2>Récapitulatif jour par jour</h2><span class="muted">Chaque journée est séparée, puis cumulée dans les totaux de la période.</span></div><div id="dailyReportTable" class="table-wrap"></div></section>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="page-heading"><div><p class="eyebrow">CONTRÔLE PROPRIÉTAIRE</p><h1>Paramètres & sauvegarde</h1><p class="muted">Configure le nom du restaurant, la devise et protège tes données.</p></div></div>
+        <section class="panel"><div class="panel-head"><h2>Informations du restaurant</h2></div><form id="settingsForm" class="form-grid"><label>Nom du restaurant<input id="settingName" maxlength="100" required></label><label>Nom du responsable (facultatif)<input id="settingOwner" maxlength="100"></label><label>Téléphone (facultatif)<input id="settingPhone" maxlength="40"></label><label>Devise<select id="settingCurrency"><option value="FCFA">FCFA (XOF)</option></select></label><div class="form-actions wide"><button class="primary" type="submit">Enregistrer les paramètres</button></div></form></section>
+        <section class="panel"><div class="panel-head"><h2>Sauvegarde et restauration</h2></div><p class="muted">Télécharge une copie de toutes les données et garde-la dans un endroit sûr. La restauration remplace les données actuellement présentes sur cet appareil.</p><div class="button-row"><button class="primary" id="exportBackup">Télécharger une sauvegarde JSON</button><label class="file-button">Restaurer une sauvegarde<input id="importBackup" type="file" accept="application/json,.json" hidden></label></div><p id="backupStatus" class="muted" role="status"></p><div class="notice warning">Cette version enregistre les données sur l’appareil. La synchronisation et la sauvegarde automatique en ligne ne sont pas encore intégrées ; une sauvegarde manuelle régulière est donc indispensable.</div></section>
+        <section class="panel"><div class="panel-head"><h2>Données de démonstration</h2></div><p class="muted">Les plats de départ sont des exemples à adapter à tes vrais prix et coûts.</p><button class="danger" id="resetDemo">Réinitialiser toutes les données de cet appareil</button></section>
+        <footer class="app-footer">RestoPilot Pro · Version locale de démarrage · Les données restent sur cet appareil.</footer>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
