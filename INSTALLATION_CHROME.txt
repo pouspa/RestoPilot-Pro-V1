@@ -1,0 +1,15 @@
+INSTALLATION DANS CHROME — RESTOPILOT PRO
+
+Important : le fichier ZIP ne s'installe pas directement comme une application Chrome. Pour que Chrome propose « Installer l'application », il faut publier le dossier restopilot_pro_v1 sur un hébergement HTTPS (ou le servir sur localhost pour un test). L'icône, le manifeste et le service worker sont inclus dans cette version.
+
+Après publication en HTTPS :
+1. Ouvrir l'adresse de l'application dans Chrome.
+2. Attendre le chargement complet.
+3. Ouvrir le menu ⋮ de Chrome.
+4. Choisir « Installer l'application » ou « Ajouter à l'écran d'accueil » selon la version de Chrome.
+5. Confirmer. L'icône RestoPilot apparaîtra dans le lanceur d'applications.
+
+Sur ordinateur, Chrome peut afficher une icône d'installation dans la barre d'adresse.
+Sur Android, l'option apparaît généralement dans le menu Chrome.
+
+La présence de l'icône ne suffit pas à rendre le site installable : l'application doit être servie par HTTPS et le service worker doit pouvoir s'enregistrer correctement.
