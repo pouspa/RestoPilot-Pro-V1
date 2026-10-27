@@ -1,0 +1,10 @@
+{
+  "name": "RestoPilot Pro",
+  "short_name": "RestoPilot",
+  "description": "Gestion de restaurant et traiteur hors connexion",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6f4",
+  "theme_color": "#123c32",
+  "icons": []
+}
